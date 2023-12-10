@@ -1,9 +1,14 @@
 from helpers import *
 
 test_data = test_input("""
+32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483
 """)
 
-test_case(1, test_data, ...)
+test_case(1, test_data, )
 test_case(2, test_data, ...)
 
 
