@@ -94,7 +94,6 @@ def part1(d: Input, ans: Answers) -> None:
             break
 
     assert start is not None
-    sparse_map.print()
 
     queue = []
     heapq.heappush(queue, (0, start))

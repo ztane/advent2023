@@ -225,6 +225,16 @@ class Input(str):
         return np.array([[conversion(c) for c in l] for l in self.lines])
 
     @reify
+    def char_matrix(self) -> np.ndarray:
+        """
+        Assume the data is a 2-dimensional character matrix
+
+        :return: that matrix
+        """
+        return np.array([[c for c in line] for line in self.lines])
+
+
+    @reify
     def numpy_array(self) -> np.ndarray:
         """
         Assume the data is a 2-dimensional space-separated integer matrix
@@ -896,7 +906,7 @@ def find_unique(
     return None
 
 
-class IterableInt(int):
+class IterableInt(int, Iterable[int]):
     def __getitem__(self, item: int) -> int:
         if item in self:
             return item
@@ -906,7 +916,7 @@ class IterableInt(int):
     def __contains__(self, value: int) -> bool:
         return 0 <= value < self
 
-    def __iter__(self) -> Iterable[int]:
+    def __iter__(self) -> Iterator[int]:
         return iter(range(self))
 
 
@@ -1567,3 +1577,10 @@ def ocr(pixels, width):
     if not rv:
         raise ValueError('Could not read image')
     return rv
+
+
+def hash_array(a: np.ndarray) -> str:
+    """
+    Return md5 hash of the array
+    """
+    return md5(a.tobytes()).hexdigest()
