@@ -16,3 +16,4 @@ termcolor
 urllib3
 more-itertools
 scipy
+intervaltree
