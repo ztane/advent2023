@@ -44,6 +44,7 @@ from statistics import median, mean
 
 from intervaltree import Interval, IntervalTree
 
+
 class reify(object):
     """
     Rip of `reify` from Pyramid framework.
@@ -169,9 +170,9 @@ class Input(str):
     @reify
     def as_unsigned(self) -> typing.Tuple[int, ...]:
         """
-            Extract all unsigned integers from the input. This will
-            return a tuple of integers. It parses 1-1 as (1, 1).
-            """
+        Extract all unsigned integers from the input. This will
+        return a tuple of integers. It parses 1-1 as (1, 1).
+        """
 
         return tuple(map(int, re.findall(r"\d+", self.data)))
 
@@ -181,7 +182,7 @@ class Input(str):
         Deprecated. Use `as_unsigned` instead. This uses reify but its
         name is a verb and not a noun.
         """
-        warnings.warn('Use `as_unsigned` instead', DeprecationWarning)
+        warnings.warn("Use `as_unsigned` instead", DeprecationWarning)
 
         return tuple(map(int, re.findall(r"\d+", self.data)))
 
@@ -191,7 +192,7 @@ class Input(str):
         Deprecated. Use `as_ints` instead. This uses reify but its
         name is a verb and not a noun.
         """
-        warnings.warn('Use `as_ints` instead', DeprecationWarning)
+        warnings.warn("Use `as_ints` instead", DeprecationWarning)
 
         return tuple(map(int, re.findall(r"-?\d+", self.data)))
 
@@ -214,9 +215,7 @@ class Input(str):
         """
         return [[int(i) for i in line.extract_ints] for line in self.lines]
 
-    def digit_array_to_ndarray(
-        self, conversion: Callable[[str], int] = int
-    ) -> np.ndarray:
+    def digit_array_to_ndarray(self, conversion: Callable[[str], int] = int) -> np.ndarray:
         """
         Convert a digit array to a numpy array
 
@@ -235,7 +234,6 @@ class Input(str):
         """
         return np.array([[c for c in line] for line in self.lines])
 
-
     @reify
     def numpy_array(self) -> np.ndarray:
         """
@@ -245,9 +243,7 @@ class Input(str):
         """
         return np.array(self.integer_matrix)
 
-    def parsed_lines(
-        self, fmt: str, verbatim_ws: bool = False
-    ) -> typing.Iterator[typing.Tuple]:
+    def parsed_lines(self, fmt: str, verbatim_ws: bool = False) -> typing.Iterator[typing.Tuple]:
         """
         Return the data parsed with a single parser
         :param fmt: the format
@@ -274,10 +270,7 @@ class Input(str):
             for i in lines[:5]:
                 printline(i)
 
-            print(
-                f"[ {len(lines)} lines in total; {len(lines) - 10} "
-                f"lines omitted... ]"
-            )
+            print(f"[ {len(lines)} lines in total; {len(lines) - 10} " f"lines omitted... ]")
 
             for i in lines[-5:]:
                 printline(i)
@@ -424,7 +417,7 @@ def get_ints(s):
     :param s: a string
     :return: sequence of integers
     """
-    return list(map(int, re.findall("\d+", s)))
+    return list(map(int, re.findall(r"\d+", s)))
 
 
 def draw_display(display_data):
@@ -465,7 +458,7 @@ class Parser:
 
         :param fmt: the format string
         :param verbatim_ws: if false, spaces are replaced with
-            \s+, if true, space characters must match exactly
+            \\s+, if true, space characters must match exactly
         """
         regex = ""
         pos = 0
@@ -639,7 +632,7 @@ def a_star_solve(
     integrated_heuristic: bool = False,
 ):
     if max_distance is None:
-        max_distance = 2 ** 32
+        max_distance = 2**32
 
     if not heuristic:
 
@@ -647,7 +640,7 @@ def a_star_solve(
             return 0
 
     queue = [Node(heuristic(origin, target), 0, origin)]
-    visited = {hashable(origin)}
+    visited = {}
 
     if not is_target:
 
@@ -667,13 +660,17 @@ def a_star_solve(
                 all_routes.append((distance, node))
                 continue
 
-        visited.add(hashable(node))
+        if hashable(node) in visited:
+            if visited[hashable(node)] <= distance:
+                continue
+
+        visited[hashable(node)] = distance
         if distance > max_depth:
             max_depth = distance
 
         if not integrated_heuristic:
             for d_dist, node in neighbours(node):
-                if hashable(node) in visited:
+                if hashable(node) in visited and visited[hashable(node)] <= distance:
                     continue
 
                 if distance + d_dist <= max_distance:
@@ -683,7 +680,7 @@ def a_star_solve(
                     cnt += 1
         else:
             for h, d_dist, node in neighbours(node):
-                if hashable(node) in visited:
+                if hashable(node) in visited and visited[hashable(node)] <= distance:
                     continue
 
                 if distance + d_dist <= max_distance:
@@ -693,6 +690,7 @@ def a_star_solve(
 
     if find_all:
         return all_routes
+
     return len(visited)
 
 
@@ -794,15 +792,11 @@ def spiral_walk() -> typing.Iterator[complex]:
         direction = 1
 
 
-_CNEIGHBOURHOOD_8_WITH_SELF = list(
-    x + y * 1j for (x, y) in product([-1, 0, 1], repeat=2)
-)
+_CNEIGHBOURHOOD_8_WITH_SELF = list(x + y * 1j for (x, y) in product([-1, 0, 1], repeat=2))
 _CNEIGHBOURHOOD_8 = [i for i in _CNEIGHBOURHOOD_8_WITH_SELF if i]
 
 
-def cneighbours_8(
-    point: complex, *, add_self: bool = False
-) -> typing.Iterator[complex]:
+def cneighbours_8(point: complex, *, add_self: bool = False) -> typing.Iterator[complex]:
     """
     Return the 8-neighbourhood around the complex coordinates. If `add_self`
     is true, then return the point itself as well.
@@ -821,10 +815,10 @@ class ring_list(list):
     """
 
     def __delitem__(self, key):
-        raise NotImplemented
+        raise NotImplementedError
 
     def pop(self, *a, **kw):
-        raise NotImplemented
+        raise NotImplementedError
 
     def __getitem__(self, item):
         if isinstance(item, slice):
@@ -834,7 +828,7 @@ class ring_list(list):
             if item.start is not None and item.start < 0:
                 raise ValueError("Slice indices must be non-negative")
 
-            return [self[i] for i in range(*item.indices(2 ** 32))]
+            return [self[i] for i in range(*item.indices(2**32))]
 
         return super().__getitem__(item % len(self))
 
@@ -846,7 +840,7 @@ class ring_list(list):
             if item.start and item.start < 0:
                 raise ValueError("Slice indices must be non-negative")
 
-            indices = range(*item.indices(2 ** 32))
+            indices = range(*item.indices(2**32))
             if len(indices) != len(value):
                 raise ValueError("Slice length doesn't match")
 
@@ -880,9 +874,7 @@ class counting_set(dict):
 T = typing.TypeVar("T")
 
 
-def find_unique(
-    items: typing.Iterable[T], key: typing.Callable[[T], typing.Any] = lambda x: x
-) -> typing.Optional[T]:
+def find_unique(items: typing.Iterable[T], key: typing.Callable[[T], typing.Any] = lambda x: x) -> typing.Optional[T]:
     """
     Find the one item that is unique keywise or none at all
     :param items: iterator of items
@@ -970,9 +962,7 @@ class SparseMap(dict):
         self.columns = IterableInt(max(i[0] + 1 for i in self))
         return self
 
-    def print(
-        self, reset_size=True, mapping=lambda x: [x, " "][x is None]
-    ) -> "SparseMap":
+    def print(self, reset_size=True, mapping=lambda x: [x, " "][x is None]) -> "SparseMap":
         if reset_size:
             self.reset_size()
 
@@ -1053,9 +1043,7 @@ def scalar(i: Iterable, nested: bool = False):
     while not is_scalar(i):
         l = list(i)
         if len(l) != 1:
-            raise ValueError(
-                "The given iterable must have exactly one element," " was {}".format(i)
-            )
+            raise ValueError("The given iterable must have exactly one element," " was {}".format(i))
         i = l[0]
         if not nested:
             return i
@@ -1076,8 +1064,6 @@ def coords(i: Union[complex, Iterable]) -> str:
     else:
         x, y = i
         return f"{int(x)},{int(y)}"
-
-
 
 
 class fancyseqiter:
@@ -1192,15 +1178,11 @@ def _test(parts, func):
 
             if (answer := answers.for_part(part)) is None:
                 raise ValueError(
-                    f"No answer was given for test case {input!r} "
-                    f"for part {part}, was expecting {output!r}"
+                    f"No answer was given for test case {input!r} " f"for part {part}, was expecting {output!r}"
                 )
 
             if str(answer) != str(output):
-                print(
-                    f"WARNING output {answer!s} from part {part} does not match"
-                    f" test case output {output!s}"
-                )
+                print(f"WARNING output {answer!s} from part {part} does not match" f" test case output {output!s}")
                 success = False
 
     if not had_cases:
@@ -1263,8 +1245,8 @@ def run(parts: Union[Iterable[int], int] = (1, 2), *, day, year, submit=False) -
                     print("Refusing to submit automatically")
 
 
-_direction_parser_prefix = re.compile("([newsNEWS]+)\s*(-?\d+)")
-_direction_parser_suffix = re.compile("(-?\d+)\s*([newsNEWS]+)")
+_direction_parser_prefix = re.compile(r"([newsNEWS]+)\s*(-?\d+)")
+_direction_parser_suffix = re.compile(r"(-?\d+)\s*([newsNEWS]+)")
 
 
 def sign(x):
@@ -1310,7 +1292,7 @@ class cdir:
 
     @staticmethod
     def rotate_right(vector: complex, times=1):
-        return vector * (1j ** times)
+        return vector * (1j**times)
 
     @staticmethod
     def rotate_right_degrees(vector: complex, degrees: int = 90):
@@ -1325,9 +1307,7 @@ class cdir:
         return getattr(cls, direction.upper()) * length
 
     @classmethod
-    def rotate_degrees(
-        cls, vector: complex, direction: str, number: int = 90
-    ) -> complex:
+    def rotate_degrees(cls, vector: complex, direction: str, number: int = 90) -> complex:
         direction = direction.upper()[0]
 
         if direction == "L":
@@ -1399,9 +1379,7 @@ def charsort(s: str) -> str:
     return "".join(sorted(s))
 
 
-def make_translator(
-    original: Iterable[str], target: Iterable[str]
-) -> Callable[[str], str]:
+def make_translator(original: Iterable[str], target: Iterable[str]) -> Callable[[str], str]:
     """
     Returns a function that will translate the characters in the original
     sequence to the corresponding characters in the destination sequence.
@@ -1480,28 +1458,25 @@ class ExtendedRange(object):
     def __getattr__(self, item):
         return getattr(self._wrapped, item)
 
-    def fully_contains(self, other: 'ExtendedRange') -> bool:
+    def fully_contains(self, other: "ExtendedRange") -> bool:
         return self.start <= other.start and self.stop >= other.stop
 
-    def either_fully_contains_other(self, other: 'ExtendedRange') -> bool:
+    def either_fully_contains_other(self, other: "ExtendedRange") -> bool:
         return self.fully_contains(other) or other.fully_contains(self)
 
-    def partially_contains(self, other: 'ExtendedRange') -> bool:
-        return (
-            self.start <= other.start < self.stop
-            or self.start <= other.stop - 1 < self.stop
-        )
+    def partially_contains(self, other: "ExtendedRange") -> bool:
+        return self.start <= other.start < self.stop or self.start <= other.stop - 1 < self.stop
 
     def overlaps(self, other) -> bool:
         return (
-            self.fully_contains(other) or self.partially_contains(other)
-            or other.partially_contains(self) or other.fully_contains(self)
+            self.fully_contains(other)
+            or self.partially_contains(other)
+            or other.partially_contains(self)
+            or other.fully_contains(self)
         )
 
 
-def interval(
-    a: int | None = None, b: int | None = None, c: int | None = None, /
-) -> ExtendedRange:
+def interval(a: int | None = None, b: int | None = None, c: int | None = None, /) -> ExtendedRange:
     """
     It is like range, but... inclusive.
     """
@@ -1557,19 +1532,16 @@ def ocr(pixels, width):
     from PIL import Image
     import pytesseract
 
-    pixels = pixels.replace('\n', '')
+    pixels = pixels.replace("\n", "")
     height = len(pixels) // width
     if height != len(pixels) / width:
-        raise ValueError('Invalid width (pixel size not a multiple of the length)')
+        raise ValueError("Invalid width (pixel size not a multiple of the length)")
 
     # for real data turn the picture into pixels
-    img = Image.frombytes(
-        'L', (40, 6),
-        bytes([0 if i == '#' else 255 for i in pixels])
-    )
+    img = Image.frombytes("L", (40, 6), bytes([0 if i == "#" else 255 for i in pixels]))
 
     # enlarge canvas around image by 2 pixels
-    new_img = Image.new('L', (44, 10), 255)
+    new_img = Image.new("L", (44, 10), 255)
     new_img.paste(img, (2, 2))
     # resize to 10x
     new_img = new_img.resize((440, 100))
@@ -1577,7 +1549,7 @@ def ocr(pixels, width):
     # use pytesseract to turn the pixels into text
     rv = pytesseract.image_to_string(new_img).strip()
     if not rv:
-        raise ValueError('Could not read image')
+        raise ValueError("Could not read image")
     return rv
 
 

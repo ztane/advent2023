@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+# re-enable F811 after bug fixed in pyflakes8
+extend-ignore = E501, F541, W503, E203, F405, E741, F403, F401, E402, F811
